@@ -1,0 +1,23 @@
+# CMake 默认目录
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+out/
+bin/
+lib/
+.cmake/
+_deps/
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+.vscode/
+.idea/
+.vs/
+
+# 其他配置
+.DS_Store
+.clang-format
