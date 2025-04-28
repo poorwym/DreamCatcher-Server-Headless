@@ -22,7 +22,7 @@ Testing/
 .DS_Store
 .clang-format
 
-.env
+.env/
 
 __pycache__/
 
