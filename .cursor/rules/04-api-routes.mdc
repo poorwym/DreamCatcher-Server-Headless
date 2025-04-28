@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# API路由
+
+## HTTP API
+
+HTTP API路由定义在 [app/api/plans.py](mdc:app/api/plans.py) 中：
+
+- **GET /api/v1/plans**：获取所有拍摄计划列表
+- **GET /api/v1/plans/{id}**：获取特定拍摄计划详情
+- **POST /api/v1/plans**：创建新的拍摄计划
+- **PUT /api/v1/plans/{id}**：更新现有拍摄计划
+- **DELETE /api/v1/plans/{id}**：删除拍摄计划
+
+所有HTTP API都返回JSON格式响应。
+
+## WebSocket API
+
+WebSocket接口定义在 [app/api/media_ws.py](mdc:app/api/media_ws.py) 中：
+
+- **WebSocket /api/v1/ws/render/{plan_id}**：建立渲染连接，推送渲染帧
+
+WebSocket连接处理流程：
+1. 客户端建立WebSocket连接
+2. 服务器加载指定计划数据
+3. 服务器请求CRenderer渲染场景
+4. 服务器向客户端推送渲染帧
+
+## API文档
+
+API详细文档可在以下地址访问：
+- Swagger UI: `/docs`
+- ReDoc: `/redoc`
+
+完整API说明见 [doc/api.md](mdc:doc/api.md)

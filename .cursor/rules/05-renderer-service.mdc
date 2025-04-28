@@ -1,0 +1,39 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 渲染服务
+
+## 渲染架构
+
+DreamCatcher使用CRenderer服务进行3D场景渲染：
+
+- 基于Cesium-Native和Vulkan技术
+- 支持3D地形和建筑模型显示
+- 提供WebSocket接口接收渲染请求
+
+## 媒体服务接口
+
+媒体服务接口定义在 [app/services/media_service.py](mdc:app/services/media_service.py) 中：
+
+- 负责与CRenderer服务通信
+- 处理渲染请求和响应
+- 格式化渲染参数
+
+## 渲染流程
+
+1. FastAPI接收客户端WebSocket连接
+2. 从数据库加载拍摄计划数据
+3. 将渲染请求发送给CRenderer服务
+4. CRenderer执行场景渲染
+5. 渲染帧通过WebSocket推送给客户端
+
+## 配置
+
+渲染服务连接配置在 [app/core/config.py](mdc:app/core/config.py) 中：
+
+- 渲染服务WebSocket地址通过环境变量 `RENDERER_WS_URL` 配置
+- 默认值为 `ws://localhost:9000/ws`
+
+详细渲染服务文档可参考 [doc/renderer.md](mdc:doc/renderer.md)

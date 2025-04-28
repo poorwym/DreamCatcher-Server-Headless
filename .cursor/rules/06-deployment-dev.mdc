@@ -1,0 +1,34 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 部署和开发
+
+## 部署方式
+
+DreamCatcher支持Docker容器化部署：
+
+- Docker Compose定义在 [docker-compose.yml](mdc:docker-compose.yml) 中
+- 主要容器：
+  - **app**: FastAPI应用，端口8000
+  - **db**: PostgreSQL数据库，端口5432
+  - **crenderer**: 渲染服务，端口9000
+
+## 环境配置
+
+项目配置通过环境变量实现：
+
+- 环境变量加载路径：`configs/.env`
+- 主要环境变量：
+  - `DATABASE_URL`: 数据库连接URL
+  - `RENDERER_WS_URL`: 渲染服务WebSocket URL
+  - `OPENAI_API_KEY`: OpenAI API密钥（如果使用）
+
+## 开发指南
+
+详细开发指南请参阅 [doc/development.md](mdc:doc/development.md)
+
+## 部署指南
+
+详细部署步骤请参阅 [doc/deployment.md](mdc:doc/deployment.md)
