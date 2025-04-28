@@ -40,4 +40,5 @@ RUN conda env create -f configs/environment.yml && \
 # 使用conda运行环境
 SHELL ["/bin/bash", "--login", "-c"]
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "dreamcatcher"]
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
