@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "DreamCatcher",
+    "version": "0.1.0"
+  },
+  "database": {
+    "url": "${DATABASE_URL}"
+  },
+  "renderer": {
+    "ws_url": "${RENDERER_WS_URL}"
+  },
+  "storage": {
+    "media_path": "storage/media",
+    "temp_path": "storage/temp"
+  }
+} 
