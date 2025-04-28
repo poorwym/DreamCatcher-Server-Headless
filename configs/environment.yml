@@ -1,0 +1,29 @@
+name: dreamcatcher
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - pip
+  - fastapi
+  - uvicorn
+  - sqlalchemy
+  - psycopg2
+  - geoalchemy2
+  - websockets
+  - pydantic
+  - python-dotenv
+  - pytest
+  - requests
+  - shapely
+  - pyproj
+  - pillow
+  - pip:
+    - httpx
+    - postgis
+    - fastmcp
+    - pytest-asyncio
+    - websocket-client
+    - pydantic-settings
+    - pytest
+    - pytest-cov

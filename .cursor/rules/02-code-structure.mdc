@@ -1,0 +1,46 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 代码结构
+
+## 目录结构
+
+```
+app/
+├─ main.py              # 入口：挂路由 & 启动事件
+├─ api/                 # 路由层
+│  ├─ plans.py          # /plans* HTTP CRUD
+│  └─ media_ws.py       # /ws/render/{plan_id} WebSocket
+├─ services/            # 业务逻辑
+│  ├─ plan_service.py   # 调 DB + 校验
+│  └─ media_service.py  # 调 MediaGateway
+├─ core/                # 共用工具
+│  ├─ config.py         # 读取 .env（DB_URL、GATEWAY_ADDR 等）
+│  └─ media_interface.py# 抽象 + StubGateway
+├─ schemas/             # Pydantic 数据模型
+│  └─ plan.py
+├─ models.py            # SQLAlchemy ORM模型
+└─ db.py                # 数据库配置
+```
+
+## 主要入口点
+
+- [app/main.py](mdc:app/main.py)：应用入口，路由注册
+- [app/db.py](mdc:app/db.py)：数据库连接和表创建
+- [app/models.py](mdc:app/models.py)：ORM数据模型
+
+## API路由
+
+- [app/api/plans.py](mdc:app/api/plans.py)：管理拍摄计划的HTTP API
+- [app/api/media_ws.py](mdc:app/api/media_ws.py)：处理渲染WebSocket连接
+
+## 业务逻辑
+
+- [app/services/plan_service.py](mdc:app/services/plan_service.py)：拍摄计划业务逻辑
+- [app/services/media_service.py](mdc:app/services/media_service.py)：媒体渲染服务
+
+## 核心配置
+
+- [app/core/config.py](mdc:app/core/config.py)：系统配置，读取环境变量
