@@ -39,22 +39,30 @@ OPENAI_API_KEY=sk-***
 OPENAI_BASE_URL=https://api.chatanywhere.tech
 ```
 
-# 启动服务
+## 启动服务
+### docker部署
+#### 启动
 ```
 docker-compose up -d
 ```
 
+
 ### 本地部署
+#### 启动
 ```bash
 chmod +x ./script/run.sh
 ./script/run.sh
 ```
-这里之后因为默认用户会是你的电脑用户名,,比如我是`alexwu`,之后就要手动进入创建相关用户.
+#### 停止
 ```bash
-psql -h localhost -p 5432 -U alexwu -d postgres
+chmod +x ./script/stop.sh
+./script/stop.sh
 ```
-```sql
-CREATE ROLE postgres WITH LOGIN SUPERUSER CREATEDB CREATEROLE PASSWORD 'postgres';
+
+#### 运行测试
+```bash
+chmod +x ./script/test.sh
+./script/test.sh
 ```
 
 更多详细信息请参阅[部署指南](./doc/deployment.md)。
