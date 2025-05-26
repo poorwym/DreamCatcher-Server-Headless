@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY ./app /app
 COPY ./configs /app/configs
+COPY ./requirements.txt /app/requirements.txt
 
 # 安装必要的依赖
 RUN apt-get update && apt-get install -y \
@@ -33,12 +34,11 @@ ENV PATH /opt/conda/bin:$PATH
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# 创建conda环境并激活
-RUN conda env create -f configs/environment.yml && \
-    echo "source activate dreamcatcher" > ~/.bashrc
+# 安装uv并使用它安装依赖
+RUN pip install uv && \
+    uv pip install --system -r requirements.txt
 
-# 使用conda运行环境
+# 使用conda运行基础环境
 SHELL ["/bin/bash", "--login", "-c"]
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "dreamcatcher"]
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
