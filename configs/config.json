@@ -8,9 +8,5 @@
   },
   "renderer": {
     "ws_url": "${RENDERER_WS_URL}"
-  },
-  "storage": {
-    "media_path": "storage/media",
-    "temp_path": "storage/temp"
   }
 } 

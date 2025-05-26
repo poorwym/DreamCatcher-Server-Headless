@@ -14,7 +14,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
 
   db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:14-3.3
     restart: always
     ports:
       - "5432:5432"
