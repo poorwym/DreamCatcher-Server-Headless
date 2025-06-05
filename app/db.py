@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from core.config import settings
+from app.core.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
@@ -19,5 +19,8 @@ def get_db():
 
 # 创建表格
 def create_tables():
-    from models import Base
-    Base.metadata.create_all(bind=engine) 
+    from app.models import Base
+    Base.metadata.create_all(bind=engine)
+
+# 在模块导入时创建数据库表
+create_tables() 

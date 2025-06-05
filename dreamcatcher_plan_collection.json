@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "DreamCatcher Plan API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "A collection for testing the DreamCatcher shooting plan API"
+  },
+  "item": [
+    {
+      "name": "Create Plan",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sunset Time-lapse\",\n  \"description\": \"Capture sunset over the city skyline\",\n  \"start_time\": \"2025-06-10T18:30:00Z\",\n  \"camera\": {\n    \"focal_length\": 35.0,\n    \"position\": [\n      120.1536,\n      30.2875,\n      100.0\n    ],\n    \"rotation\": [\n      0.0,\n      0.0,\n      0.0,\n      1.0\n    ]\n  },\n  \"tileset_url\": \"https://example.com/tileset.json\",\n  \"user_id\": \"89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/plans",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "plans"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get My Plans",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/plans",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "plans"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get Single Plan",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/plans/{{plan_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "plans",
+            "{{plan_id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Plan",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"Updated description for sunset time-lapse\",\n  \"tileset_url\": \"https://cdn.example.com/new_tileset.json\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/plans/{{plan_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "plans",
+            "{{plan_id}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Delete Plan",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/plans/{{plan_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "plans",
+            "{{plan_id}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "access_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWYwZjNhMC00YzFlLTRhNDEtYmI4ZS1hNzg2ZGQwODI4YjQiLCJlbWFpbCI6ImFsaWNlQGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ5MTMwOTIxfQ.suytBhx-7Gp1GuH2pU_aoOKG_DtpAh--Jo-O4Ol2-rE"
+    },
+    {
+      "key": "plan_id",
+      "value": ""
+    }
+  ]
+}
