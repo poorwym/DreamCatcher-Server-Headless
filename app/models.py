@@ -15,6 +15,15 @@ class Plan(Base):
     start_time = Column(DateTime(timezone=True), nullable=False)
     camera = Column(JSON, nullable=False)  # 存储Camera对象
     tileset_url = Column(String, nullable=False)
-    user_id = Column(String, nullable=False, index=True)  # 添加用户ID字段
+    user_id = Column(UUID(as_uuid=True), nullable=False, index=True)  # 添加用户ID字段
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now()) 
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class User(Base):
+    __tablename__ = "users"
+    user_name = Column(String, nullable=False, index=True)
+    user_id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
+    email = Column(String, nullable=False, index=True)
+    password = Column(String, nullable=False, index=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

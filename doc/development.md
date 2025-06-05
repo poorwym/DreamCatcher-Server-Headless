@@ -117,7 +117,7 @@ def get_plan(db: Session, plan_id: int) -> Optional[Plan]:
 示例：
 
 ```python
-# app/api/plans.py
+# app/api/plan_api.py
 @router.get("/{plan_id}", response_model=Plan)
 def get_plan(plan_id: int, db: Session = Depends(get_db)):
     """获取指定ID的拍摄计划"""

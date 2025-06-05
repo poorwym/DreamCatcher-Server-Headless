@@ -17,19 +17,20 @@ class PlanBase(BaseModel):
     start_time: datetime
     camera: Camera
     tileset_url: str
-    user_id: str
+    user_id: UUID
 
 # 创建拍摄计划
 class PlanCreate(PlanBase):
     pass
 
 # 更新拍摄计划
-class PlanUpdate(PlanBase):
+class PlanUpdate(BaseModel):
     name: Optional[str] = None
+    description: Optional[str] = None
     start_time: Optional[datetime] = None
     camera: Optional[Camera] = None
     tileset_url: Optional[str] = None
-    user_id: Optional[str] = None
+    # 注意：更新时不允许修改user_id
 
 # 拍摄计划
 class Plan(PlanBase):
