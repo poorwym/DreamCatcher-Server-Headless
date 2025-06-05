@@ -1,73 +1,61 @@
-# API 文档
+# DreamCatcher API 文档
 
-本文档详细描述DreamCatcher服务端提供的API接口，包括HTTP REST API和WebSocket接口。
+## 概述
 
-## API 基础信息
+DreamCatcher是一个拍照辅助工具的后端API，提供用户认证、拍摄计划管理和LLM聊天功能。
 
-- **基础URL**: `/api/v1`
-- **内容类型**: `application/json`
-- **认证方式**: JWT Bearer Token认证
+**基础URL**: `http://localhost:8000/api/v1`
 
-## 认证
+## 认证方式
 
-### Bearer Token认证
-
-大部分API端点需要使用Bearer Token认证。获取token后，在请求头中添加：
-
+API使用Bearer Token认证。在请求头中包含：
 ```
-Authorization: Bearer <your_access_token>
+Authorization: Bearer <your_token>
 ```
 
-## HTTP REST API
+## API端点
 
-### 用户认证
+### 认证相关 (`/auth`)
 
-#### 用户注册
-
-```
-POST /api/v1/auth/register
+#### 1. 用户注册
+```http
+POST /auth/register
 ```
 
 **请求体**:
 ```json
 {
-  "user_name": "张三",
-  "email": "zhangsan@example.com",
-  "password": "secure_password123"
+  "user_name": "用户名",
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
-
-**字段说明**:
-- `user_name`: 用户名（1-50个字符）
-- `email`: 邮箱地址
-- `password`: 密码（6-100个字符）
 
 **响应**:
 ```json
 {
-  "user": {
-    "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "user_name": "张三",
-    "email": "zhangsan@example.com"
-  },
-  "message": "注册成功"
+  "user_id": "uuid",
+  "user_name": "用户名",
+  "email": "user@example.com",
+  "message": "注册成功",
+  "success": true
 }
 ```
 
-**错误响应**:
-- 400: 邮箱已被注册或参数验证失败
+**说明**:
+- user_name: 1-50个字符
+- password: 6-100个字符
 
-#### 用户登录
-
-```
-POST /api/v1/auth/login
+#### 2. 用户登录
+```http
+POST /auth/login
 ```
 
 **请求体**:
 ```json
 {
-  "email": "zhangsan@example.com",
-  "password": "secure_password123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
 
@@ -75,102 +63,88 @@ POST /api/v1/auth/login
 ```json
 {
   "user": {
-    "user_id": "123e4567-e89b-12d3-a456-426614174000",
-    "user_name": "张三",
-    "email": "zhangsan@example.com"
+    "user_id": "uuid",
+    "user_name": "用户名",
+    "email": "user@example.com"
   },
-  "token": {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "token_type": "bearer",
-    "expires_in": 1800
-  },
-  "message": "登录成功"
+  "access_token": "jwt_token",
+  "token_type": "bearer",
+  "message": "登录成功",
+  "success": true
 }
 ```
 
-**错误响应**:
-- 401: 邮箱或密码错误
-
-#### 获取当前用户信息
-
-```
-GET /api/v1/auth/me
+#### 3. 获取当前用户信息
+```http
+GET /auth/me
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **响应**:
 ```json
 {
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "user_name": "张三",
-  "email": "zhangsan@example.com"
+  "user_id": "uuid",
+  "user_name": "用户名",
+  "email": "user@example.com"
 }
 ```
 
-#### 获取当前用户详细信息
-
+#### 4. 获取当前用户详细信息
+```http
+GET /auth/me/detail
 ```
-GET /api/v1/auth/me/detail
-```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **响应**:
 ```json
 {
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "user_name": "张三",
-  "email": "zhangsan@example.com",
-  "created_at": "2023-06-10T08:30:00Z",
-  "updated_at": "2023-06-10T08:30:00Z"
+  "user_id": "uuid",
+  "user_name": "用户名",
+  "email": "user@example.com",
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-01T00:00:00Z"
 }
 ```
 
-#### 更新当前用户信息
-
+#### 5. 更新当前用户信息
+```http
+PUT /auth/me
 ```
-PUT /api/v1/auth/me
-```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **请求体**:
 ```json
 {
-  "user_name": "李四",
-  "email": "lisi@example.com",
-  "password": "new_password123"
+  "user_name": "新用户名",
+  "email": "new@example.com",
+  "password": "newpassword123"
 }
 ```
-
-**注意**: 所有字段都是可选的，只更新提供的字段。
 
 **响应**:
 ```json
 {
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "user_name": "李四",
-  "email": "lisi@example.com"
+  "user_id": "uuid",
+  "user_name": "新用户名",
+  "email": "new@example.com"
 }
 ```
 
-**错误响应**:
-- 400: 邮箱已被其他用户使用或参数验证失败
-
-#### 修改密码
-
-```
-POST /api/v1/auth/change-password
+#### 6. 修改密码
+```http
+POST /auth/change-password
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **请求体**:
 ```json
 {
-  "old_password": "old_password123",
-  "new_password": "new_password123"
+  "old_password": "oldpassword",
+  "new_password": "newpassword123"
 }
 ```
 
@@ -182,327 +156,338 @@ POST /api/v1/auth/change-password
 }
 ```
 
-**错误响应**:
-- 400: 原密码错误
-
-#### 根据ID获取用户信息
-
-```
-GET /api/v1/auth/user/{user_id}
+#### 7. 根据ID获取用户信息
+```http
+GET /auth/user/{user_id}
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **路径参数**:
-- `user_id` (UUID): 用户ID
+- `user_id`: 用户UUID
 
 **响应**:
 ```json
 {
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "user_name": "张三",
-  "email": "zhangsan@example.com"
+  "user_id": "uuid",
+  "user_name": "用户名",
+  "email": "user@example.com"
 }
 ```
 
-**错误响应**:
-- 404: 用户不存在
-
-#### 验证令牌
-
-```
-POST /api/v1/auth/verify-token
+#### 8. 验证令牌
+```http
+POST /auth/verify-token
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **响应**:
 ```json
 {
-  "user_id": "123e4567-e89b-12d3-a456-426614174000",
-  "user_name": "张三",
-  "email": "zhangsan@example.com"
+  "user_id": "uuid",
+  "user_name": "用户名",
+  "email": "user@example.com"
 }
 ```
 
-**错误响应**:
-- 401: 令牌无效或已过期
+### LLM聊天 (`/llm`)
 
-### 拍摄计划管理
-
-**注意**: 所有拍摄计划API都需要Bearer Token认证，用户只能操作自己创建的计划。
-
-#### 获取拍摄计划列表
-
-```
-GET /api/v1/plans
+#### 1. LLM聊天
+```http
+POST /llm/chat
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
+
+**请求体**:
+```json
+{
+  "query": "用户的问题或请求"
+}
+```
+
+**响应**:
+```json
+{
+  "response": "LLM的回复内容",
+  "success": true,
+  "message": "请求处理成功"
+}
+```
+
+**支持的功能**:
+- 查询拍摄计划
+- 创建新的拍摄计划
+- 获取地点经纬度
+- 查询天气信息
+- 获取当前时间
+
+#### 2. 检查LLM服务状态
+```http
+GET /llm/health
+```
+
+**响应**:
+```json
+{
+  "status": "healthy",
+  "service": "LLM Chat Service",
+  "message": "LLM服务运行正常"
+}
+```
+
+### 拍摄计划管理 (`/plans`)
+
+#### 1. 获取指定拍摄计划
+```http
+GET /plans/{plan_id}
+```
+
+**需要认证**: ✅
+
+**路径参数**:
+- `plan_id`: 计划UUID
+
+**响应**:
+```json
+{
+  "plan_id": "uuid",
+  "user_id": "uuid",
+  "title": "计划标题",
+  "description": "计划描述",
+  "location": "拍摄地点",
+  "scheduled_time": "2023-12-25T10:00:00Z",
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-01T00:00:00Z"
+}
+```
+
+#### 2. 获取拍摄计划列表
+```http
+GET /plans/
+```
+
+**需要认证**: ✅
 
 **查询参数**:
-- `skip` (整数, 可选): 分页起始位置，默认为0
-- `limit` (整数, 可选): 每页数量，默认为100
+- `skip`: 跳过的记录数（默认0）
+- `limit`: 限制返回数量（默认100）
 
 **响应**:
 ```json
 [
   {
-    "id": "123e4567-e89b-12d3-a456-426614174000",
-    "name": "黄昏下的建筑",
-    "description": "捕捉夕阳照射下的城市建筑",
-    "start_time": "2025-04-25T10:00:00Z",
-    "camera": {
-      "focal_length": 35.0,
-      "position": [30.2741, 120.1551, 100.0],
-      "rotation": [0.0, 0.0, 0.0, 1.0]
-    },
-    "tileset_url": "https://mycdn.com/city/tileset.json",
-    "user_id": "456e7890-e89b-12d3-a456-426614174001",
-    "created_at": "2023-06-10T08:30:00Z",
-    "updated_at": "2023-06-10T08:30:00Z"
+    "plan_id": "uuid",
+    "user_id": "uuid",
+    "title": "计划标题",
+    "description": "计划描述",
+    "location": "拍摄地点",
+    "scheduled_time": "2023-12-25T10:00:00Z",
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T00:00:00Z"
   }
 ]
 ```
 
-#### 获取指定拍摄计划
-
-```
-GET /api/v1/plans/{plan_id}
-```
-
-**认证**: 需要Bearer Token
-
-**路径参数**:
-- `plan_id` (UUID): 拍摄计划ID
-
-**响应**:
-```json
-{
-  "id": "123e4567-e89b-12d3-a456-426614174000",
-  "name": "黄昏下的建筑",
-  "description": "捕捉夕阳照射下的城市建筑",
-  "start_time": "2025-04-25T10:00:00Z",
-  "camera": {
-    "focal_length": 35.0,
-    "position": [30.2741, 120.1551, 100.0],
-    "rotation": [0.0, 0.0, 0.0, 1.0]
-  },
-  "tileset_url": "https://mycdn.com/city/tileset.json",
-  "user_id": "456e7890-e89b-12d3-a456-426614174001",
-  "created_at": "2023-06-10T08:30:00Z",
-  "updated_at": "2023-06-10T08:30:00Z"
-}
+#### 3. 创建拍摄计划
+```http
+POST /plans/
 ```
 
-**错误响应**:
-- 404: 计划未找到或无权访问
-
-#### 创建拍摄计划
-
-```
-POST /api/v1/plans
-```
-
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **请求体**:
 ```json
 {
-  "name": "黄昏下的建筑",
-  "description": "捕捉夕阳照射下的城市建筑",
-  "start_time": "2025-04-25T10:00:00Z",
-  "camera": {
-    "focal_length": 35.0,
-    "position": [30.2741, 120.1551, 100.0],
-    "rotation": [0.0, 0.0, 0.0, 1.0]
-  },
-  "tileset_url": "https://mycdn.com/city/tileset.json",
-  "user_id": "456e7890-e89b-12d3-a456-426614174001"
+  "title": "计划标题",
+  "description": "计划描述",
+  "location": "拍摄地点",
+  "scheduled_time": "2023-12-25T10:00:00Z"
 }
 ```
 
-**注意**: `user_id`字段会被自动设置为当前认证用户的ID，即使在请求中提供了不同的值。
-
 **响应**:
-- 状态码: 201 Created
-- 响应体: 创建的拍摄计划对象
-
-#### 更新拍摄计划
-
+```json
+{
+  "plan_id": "uuid",
+  "user_id": "uuid",
+  "title": "计划标题",
+  "description": "计划描述",
+  "location": "拍摄地点",
+  "scheduled_time": "2023-12-25T10:00:00Z",
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-01T00:00:00Z"
+}
 ```
-PATCH /api/v1/plans/{plan_id}
+
+#### 4. 更新拍摄计划
+```http
+PATCH /plans/{plan_id}
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **路径参数**:
-- `plan_id` (UUID): 拍摄计划ID
+- `plan_id`: 计划UUID
 
 **请求体**:
 ```json
 {
-  "name": "修改后的计划名称",
-  "description": "更新的描述信息",
-  "camera": {
-    "focal_length": 50.0,
-    "position": [30.2741, 120.1551, 120.0],
-    "rotation": [0.1, 0.0, 0.0, 0.9]
-  }
+  "title": "新标题",
+  "description": "新描述",
+  "location": "新地点",
+  "scheduled_time": "2023-12-26T10:00:00Z"
 }
 ```
 
-**注意**: 
-- 请求体中的字段为可选，只更新提供的字段
-- 不能修改`user_id`字段
-- 只能更新当前用户创建的计划
-
 **响应**:
-- 状态码: 200 OK
-- 响应体: 更新后的拍摄计划对象
-
-**错误响应**:
-- 404: 计划未找到或无权访问
-
-#### 删除拍摄计划
-
+```json
+{
+  "plan_id": "uuid",
+  "user_id": "uuid",
+  "title": "新标题",
+  "description": "新描述",
+  "location": "新地点",
+  "scheduled_time": "2023-12-26T10:00:00Z",
+  "created_at": "2023-01-01T00:00:00Z",
+  "updated_at": "2023-01-02T00:00:00Z"
+}
 ```
-DELETE /api/v1/plans/{plan_id}
+
+#### 5. 删除拍摄计划
+```http
+DELETE /plans/{plan_id}
 ```
 
-**认证**: 需要Bearer Token
+**需要认证**: ✅
 
 **路径参数**:
-- `plan_id` (UUID): 拍摄计划ID
+- `plan_id`: 计划UUID
 
-**响应**:
-- 状态码: 204 No Content
+**响应**: HTTP 204 No Content
 
-**错误响应**:
-- 404: 计划未找到或无权访问
-
-#### 管理员获取所有计划
-
-```
-GET /api/v1/plans/admin/all
+#### 6. 管理员获取所有计划
+```http
+GET /plans/admin/all
 ```
 
-**认证**: 需要Bearer Token（管理员权限）
+**需要认证**: ✅
+**权限要求**: 管理员（暂未实现权限检查）
 
 **查询参数**:
-- `user_id` (UUID, 可选): 筛选属于指定用户的计划
-- `skip` (整数, 可选): 分页起始位置，默认为0
-- `limit` (整数, 可选): 每页数量，默认为100
+- `user_id`: 筛选特定用户的计划（可选）
+- `skip`: 跳过的记录数（默认0）
+- `limit`: 限制返回数量（默认100）
 
-**注意**: 此端点用于管理员查看所有用户的计划，目前暂未实现管理员权限检查。
-
-**响应**: 与"获取拍摄计划列表"相同，但可能包含多个用户的计划。
-
-## WebSocket API
-
-### 渲染计划场景
-
+**响应**:
+```json
+[
+  {
+    "plan_id": "uuid",
+    "user_id": "uuid",
+    "title": "计划标题",
+    "description": "计划描述",
+    "location": "拍摄地点",
+    "scheduled_time": "2023-12-25T10:00:00Z",
+    "created_at": "2023-01-01T00:00:00Z",
+    "updated_at": "2023-01-01T00:00:00Z"
+  }
+]
 ```
-WebSocket /api/v1/ws/render/{plan_id}
-```
 
-用于获取特定拍摄计划的实时渲染结果。
+## 错误响应
 
-**认证**: 需要Bearer Token（通过查询参数或升级头传递）
+所有API端点在出错时会返回以下格式的错误响应：
 
-**连接参数**:
-- `plan_id` (UUID): 拍摄计划ID
-
-**权限**: 只能渲染当前用户创建的计划
-
-**客户端到服务器消息**:
-
-启动渲染:
 ```json
 {
-  "action": "start_render"
+  "detail": "错误详细信息",
+  "status_code": 400
 }
 ```
 
-停止渲染:
-```json
-{
-  "action": "stop_render"
+### 常见错误代码
+
+- `400 Bad Request`: 请求参数无效
+- `401 Unauthorized`: 未提供有效的认证令牌
+- `403 Forbidden`: 权限不足
+- `404 Not Found`: 资源不存在
+- `422 Unprocessable Entity`: 请求格式正确但内容无效
+- `500 Internal Server Error`: 服务器内部错误
+- `503 Service Unavailable`: 服务不可用
+
+## 注意事项
+
+1. 所有时间字段使用ISO 8601格式（UTC时间）
+2. UUID字段使用标准UUID格式
+3. 用户只能访问自己创建的拍摄计划
+4. 密码要求6-100个字符
+5. 用户名要求1-50个字符
+6. 邮箱地址必须是有效格式
+
+## 示例代码
+
+### Python 示例
+
+```python
+import requests
+
+# 用户注册
+register_data = {
+    "user_name": "测试用户",
+    "email": "test@example.com",
+    "password": "password123"
 }
+response = requests.post("http://localhost:8000/auth/register", json=register_data)
+
+# 用户登录
+login_data = {
+    "email": "test@example.com",
+    "password": "password123"
+}
+response = requests.post("http://localhost:8000/auth/login", json=login_data)
+token = response.json()["access_token"]
+
+# 使用token访问受保护的端点
+headers = {"Authorization": f"Bearer {token}"}
+response = requests.get("http://localhost:8000/auth/me", headers=headers)
+
+# 创建拍摄计划
+plan_data = {
+    "title": "日出拍摄",
+    "description": "在海边拍摄日出",
+    "location": "青岛海滩",
+    "scheduled_time": "2023-12-25T06:00:00Z"
+}
+response = requests.post("http://localhost:8000/plans/", json=plan_data, headers=headers)
 ```
 
-**服务器到客户端消息**:
+### JavaScript 示例
 
-渲染帧数据:
-```json
-{
-  "type": "frame",
-  "frame_number": 1,
-  "timestamp": "2025-04-25T10:00:01Z",
-  "image_data": "base64编码的图像数据"
-}
-```
-
-错误消息:
-```json
-{
-  "type": "error",
-  "message": "错误详情"
-}
-```
-
-**错误情况**:
-- 连接时，如果计划不存在或无权访问，会以代码1008关闭连接
-- 渲染过程中出现错误，会发送错误消息
-
-## 数据模型
-
-### 相机参数 (Camera)
-
-```json
-{
-  "focal_length": 35.0,     // 焦距，单位毫米
-  "position": [30.2741, 120.1551, 100.0],  // 经度、纬度、高度
-  "rotation": [0.0, 0.0, 0.0, 1.0]  // 四元数表示的旋转
-}
-```
-
-### 拍摄计划 (Plan)
-
-```json
-{
-  "id": "123e4567-e89b-12d3-a456-426614174000",  // 计划ID (UUID)
-  "name": "计划名称",        // 计划名称
-  "description": "描述信息", // 计划描述，可选
-  "start_time": "2025-04-25T10:00:00Z",  // 计划开始时间
-  "camera": {               // 相机参数
-    "focal_length": 35.0,
-    "position": [30.2741, 120.1551, 100.0],
-    "rotation": [0.0, 0.0, 0.0, 1.0]
+```javascript
+// 用户登录
+const loginResponse = await fetch('http://localhost:8000/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
   },
-  "tileset_url": "https://mycdn.com/city/tileset.json", // 3D模型URL
-  "user_id": "456e7890-e89b-12d3-a456-426614174001", // 用户ID (UUID)
-  "created_at": "2023-06-10T08:30:00Z",  // 创建时间
-  "updated_at": "2023-06-10T08:30:00Z"   // 更新时间
-}
+  body: JSON.stringify({
+    email: 'test@example.com',
+    password: 'password123'
+  })
+});
+
+const loginData = await loginResponse.json();
+const token = loginData.access_token;
+
+// 获取拍摄计划列表
+const plansResponse = await fetch('http://localhost:8000/plans/', {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
+
+const plans = await plansResponse.json();
+console.log(plans);
 ```
-
-## 权限说明
-
-### 用户权限
-
-- 用户只能查看、创建、更新和删除自己的拍摄计划
-- 用户无法访问其他用户的计划
-- 所有计划操作都需要认证
-
-### 管理员权限
-
-- 管理员可以查看所有用户的计划（通过`/plans/admin/all`端点）
-- 管理员权限验证功能待实现
-
-### 安全措施
-
-- 所有API使用JWT Bearer Token认证
-- 计划创建时自动关联到当前用户
-- 更新时不允许修改`user_id`字段
-- 数据库查询时自动过滤用户权限 
