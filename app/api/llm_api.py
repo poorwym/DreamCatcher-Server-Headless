@@ -1,8 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import Optional
 
-from app.db import get_db
 from app.schemas.llm_model import LLMRequest, LLMResponse, LLMHealthResponse
 from app.services.llm_service import llm_service
 from app.api.auth_api import get_current_user
@@ -13,8 +11,7 @@ router = APIRouter(prefix="/llm", tags=["LLM聊天"])
 @router.post("/chat", response_model=LLMResponse, summary="LLM聊天")
 async def chat_with_llm(
     request: LLMRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_user)
 ):
     """
     与LLM聊天，支持拍摄计划管理
