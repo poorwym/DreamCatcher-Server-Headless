@@ -6,6 +6,7 @@ from app.core.config import ConfigLoader
 import datetime
 import logging
 from typing import List
+import threading
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +39,21 @@ import uuid
 import json
 
 GAODE_API_KEY = config_loader.get_env("GAODE_API_KEY")
+
+# 线程本地存储，用于统一的数据库连接管理
+thread_local = threading.local()
+
+def get_db_session():
+    """获取当前线程的数据库会话"""
+    if not hasattr(thread_local, 'db_session') or thread_local.db_session is None:
+        thread_local.db_session = SessionLocal()
+    return thread_local.db_session
+
+def close_db_session():
+    """关闭当前线程的数据库会话"""
+    if hasattr(thread_local, 'db_session') and thread_local.db_session is not None:
+        thread_local.db_session.close()
+        thread_local.db_session = None
 
 # llm tool kit
 
@@ -124,9 +140,9 @@ def get_plans_by_user(user_id : str) -> str:
     Returns:
         list[dict]: 拍摄计划列表, 格式为list[dict]
     '''
-    db = SessionLocal()
     try:
         logger.info(f"正在查询用户计划: {user_id}")
+        db = get_db_session()
         user_id_uuid = uuid.UUID(user_id)
         plans = plan_service.get_plans_by_user(db, user_id_uuid)
         
@@ -155,8 +171,6 @@ def get_plans_by_user(user_id : str) -> str:
     except Exception as e:
         logger.error(f"查询用户计划异常: {user_id}, 错误: {str(e)}")
         return json.dumps({"error": f"查询计划失败: {str(e)}"})
-    finally:
-        db.close()
 
 @tool(name="create_plan", description="创建拍摄计划")
 def create_plan(name: str, description: str, start_time: str, focal_length: float, position: List[float], rotation: List[float], user_id: str, tileset_url: str = "") -> dict:
@@ -174,9 +188,9 @@ def create_plan(name: str, description: str, start_time: str, focal_length: floa
     Returns:
         dict: 拍摄计划, 格式为dict
     '''
-    db = SessionLocal()
     try:
         logger.info(f"正在创建拍摄计划: {name}")
+        db = get_db_session()
         
         # 解析start_time
         start_time_parsed = None
@@ -221,8 +235,6 @@ def create_plan(name: str, description: str, start_time: str, focal_length: floa
             "error": f"创建计划失败: {str(e)}",
             "status": "failed"
         }
-    finally:
-        db.close()
 
 
 # llm interface
@@ -251,7 +263,18 @@ def llm_service(user_id : str, query : str) -> str:
     Returns:
         str: 友好的回复，包含你执行的操作和结果,要求清晰的陈述你调用了哪些工具.
     '''
-    pass
+    try:
+        # 在开始处理前创建统一的数据库会话
+        get_db_session()
+        logger.info(f"为用户 {user_id} 创建统一数据库会话")
+        
+        # 这里会被SimpleLLMFunc框架填充实际的LLM逻辑
+        pass
+        
+    finally:
+        # 确保在处理完成后关闭数据库会话
+        close_db_session()
+        logger.info(f"关闭用户 {user_id} 的数据库会话")
 
 if __name__ == "__main__":
     # 测试代码
@@ -263,3 +286,5 @@ if __name__ == "__main__":
         print("LLM回复:", ans)
     except Exception as e:
         logger.error(f"测试运行失败: {str(e)}")
+    finally:
+        close_db_session()
