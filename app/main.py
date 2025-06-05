@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
 from api import plan_api, auth_api, llm_api
-from db import create_tables
 
 # 创建FastAPI应用
 app = FastAPI(
