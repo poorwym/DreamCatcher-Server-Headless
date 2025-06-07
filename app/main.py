@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
-from api import plan_api, auth_api, llm_api
+from api import plan_api, auth_api, llm_api, util_api
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(plan_api.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(auth_api.router, prefix=f"{settings.API_V1_STR}")
 app.include_router(llm_api.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(util_api.router, prefix=f"{settings.API_V1_STR}")
 
 @app.get("/")
 def read_root():

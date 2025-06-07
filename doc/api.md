@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # DreamCatcher API 文档
 
 ## 概述
@@ -62,15 +67,17 @@ POST /auth/login
 **响应**:
 ```json
 {
-  "user": {
-    "user_id": "uuid",
-    "user_name": "用户名",
-    "email": "user@example.com"
-  },
-  "access_token": "jwt_token",
-  "token_type": "bearer",
-  "message": "登录成功",
-  "success": true
+    "user": {
+        "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4",
+        "user_name": "Alice Smith",
+        "email": "alice@example.com"
+    },
+    "token": {
+        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWYwZjNhMC00YzFlLTRhNDEtYmI4ZS1hNzg2ZGQwODI4YjQiLCJlbWFpbCI6ImFsaWNlQGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ5MTk3MTEzfQ.IGzi1rGNDOw6oibqk-QEDaSqwL5Vfn4Vwryt0bYflVc",
+        "token_type": "bearer",
+        "expires_in": 1800
+    },
+    "message": "登录成功"
 }
 ```
 
@@ -252,15 +259,29 @@ GET /plans/{plan_id}
 **响应**:
 ```json
 {
-  "plan_id": "uuid",
-  "user_id": "uuid",
-  "title": "计划标题",
-  "description": "计划描述",
-  "location": "拍摄地点",
-  "scheduled_time": "2023-12-25T10:00:00Z",
-  "created_at": "2023-01-01T00:00:00Z",
-  "updated_at": "2023-01-01T00:00:00Z"
-}
+        "name": "Sunset Time-lapse",
+        "description": "Capture sunset over the city skyline",
+        "start_time": "2025-06-11T02:30:00+08:00",
+        "camera": {
+            "focal_length": 35.0,
+            "position": [
+                120.1536,
+                30.2875,
+                100.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        },
+        "tileset_url": "https://example.com/tileset.json",
+        "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4",
+        "id": "b000da98-a72c-48a3-81ec-a78d67f67204",
+        "created_at": "2025-06-05T21:44:31.003196+08:00",
+        "updated_at": "2025-06-05T21:44:31.003196+08:00"
+    }
 ```
 
 #### 2. 获取拍摄计划列表
@@ -278,15 +299,33 @@ GET /plans/
 ```json
 [
   {
-    "plan_id": "uuid",
-    "user_id": "uuid",
-    "title": "计划标题",
-    "description": "计划描述",
-    "location": "拍摄地点",
-    "scheduled_time": "2023-12-25T10:00:00Z",
-    "created_at": "2023-01-01T00:00:00Z",
-    "updated_at": "2023-01-01T00:00:00Z"
-  }
+        "name": "Sunset Time-lapse",
+        "description": "Capture sunset over the city skyline",
+        "start_time": "2025-06-11T02:30:00+08:00",
+        "camera": {
+            "focal_length": 35.0,
+            "position": [
+                120.1536,
+                30.2875,
+                100.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        },
+        "tileset_url": "https://example.com/tileset.json",
+        "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4",
+        "id": "b000da98-a72c-48a3-81ec-a78d67f67204",
+        "created_at": "2025-06-05T21:44:31.003196+08:00",
+        "updated_at": "2025-06-05T21:44:31.003196+08:00"
+    },
+    {
+        ...
+    }
+    ...
 ]
 ```
 
@@ -300,24 +339,53 @@ POST /plans/
 **请求体**:
 ```json
 {
-  "title": "计划标题",
-  "description": "计划描述",
-  "location": "拍摄地点",
-  "scheduled_time": "2023-12-25T10:00:00Z"
+  "name": "Sunset Time-lapse",
+  "description": "Capture sunset over the city skyline",
+  "start_time": "2025-06-10T18:30:00Z",
+  "camera": {
+    "focal_length": 35.0,
+    "position": [
+      120.1536,
+      30.2875,
+      100.0
+    ],
+    "rotation": [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  },
+  "tileset_url": "https://example.com/tileset.json",
+  "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4"
 }
 ```
 
 **响应**:
 ```json
 {
-  "plan_id": "uuid",
-  "user_id": "uuid",
-  "title": "计划标题",
-  "description": "计划描述",
-  "location": "拍摄地点",
-  "scheduled_time": "2023-12-25T10:00:00Z",
-  "created_at": "2023-01-01T00:00:00Z",
-  "updated_at": "2023-01-01T00:00:00Z"
+    "name": "Sunset Time-lapse",
+    "description": "Capture sunset over the city skyline",
+    "start_time": "2025-06-11T02:30:00+08:00",
+    "camera": {
+        "focal_length": 35.0,
+        "position": [
+            120.1536,
+            30.2875,
+            100.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ]
+    },
+    "tileset_url": "https://example.com/tileset.json",
+    "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4",
+    "id": "d0cbcba5-90ff-4cf0-8bf3-467018f9ec7b",
+    "created_at": "2025-06-06T16:19:24.050622+08:00",
+    "updated_at": "2025-06-06T16:19:24.050622+08:00"
 }
 ```
 
@@ -332,26 +400,39 @@ PATCH /plans/{plan_id}
 - `plan_id`: 计划UUID
 
 **请求体**:
+要修改的字段
 ```json
 {
-  "title": "新标题",
-  "description": "新描述",
-  "location": "新地点",
-  "scheduled_time": "2023-12-26T10:00:00Z"
+  "description": "Updated description for sunset time-lapse",
+  "tileset_url": "https://cdn.example.com/new_tileset.json"
 }
 ```
 
 **响应**:
 ```json
 {
-  "plan_id": "uuid",
-  "user_id": "uuid",
-  "title": "新标题",
-  "description": "新描述",
-  "location": "新地点",
-  "scheduled_time": "2023-12-26T10:00:00Z",
-  "created_at": "2023-01-01T00:00:00Z",
-  "updated_at": "2023-01-02T00:00:00Z"
+    "name": "Sunset Time-lapse",
+    "description": "Updated description for sunset time-lapse",
+    "start_time": "2025-06-11T02:30:00+08:00",
+    "camera": {
+        "focal_length": 35.0,
+        "position": [
+            120.1536,
+            30.2875,
+            100.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+        ]
+    },
+    "tileset_url": "https://cdn.example.com/new_tileset.json",
+    "user_id": "89f0f3a0-4c1e-4a41-bb8e-a786dd0828b4",
+    "id": "b000da98-a72c-48a3-81ec-a78d67f67204",
+    "created_at": "2025-06-05T21:44:31.003196+08:00",
+    "updated_at": "2025-06-06T16:21:20.673033+08:00"
 }
 ```
 
@@ -368,33 +449,7 @@ DELETE /plans/{plan_id}
 **响应**: HTTP 204 No Content
 
 #### 6. 管理员获取所有计划
-```http
-GET /plans/admin/all
-```
-
-**需要认证**: ✅
-**权限要求**: 管理员（暂未实现权限检查）
-
-**查询参数**:
-- `user_id`: 筛选特定用户的计划（可选）
-- `skip`: 跳过的记录数（默认0）
-- `limit`: 限制返回数量（默认100）
-
-**响应**:
-```json
-[
-  {
-    "plan_id": "uuid",
-    "user_id": "uuid",
-    "title": "计划标题",
-    "description": "计划描述",
-    "location": "拍摄地点",
-    "scheduled_time": "2023-12-25T10:00:00Z",
-    "created_at": "2023-01-01T00:00:00Z",
-    "updated_at": "2023-01-01T00:00:00Z"
-  }
-]
-```
+TODO
 
 ## 错误响应
 
@@ -425,69 +480,3 @@ GET /plans/admin/all
 4. 密码要求6-100个字符
 5. 用户名要求1-50个字符
 6. 邮箱地址必须是有效格式
-
-## 示例代码
-
-### Python 示例
-
-```python
-import requests
-
-# 用户注册
-register_data = {
-    "user_name": "测试用户",
-    "email": "test@example.com",
-    "password": "password123"
-}
-response = requests.post("http://localhost:8000/auth/register", json=register_data)
-
-# 用户登录
-login_data = {
-    "email": "test@example.com",
-    "password": "password123"
-}
-response = requests.post("http://localhost:8000/auth/login", json=login_data)
-token = response.json()["access_token"]
-
-# 使用token访问受保护的端点
-headers = {"Authorization": f"Bearer {token}"}
-response = requests.get("http://localhost:8000/auth/me", headers=headers)
-
-# 创建拍摄计划
-plan_data = {
-    "title": "日出拍摄",
-    "description": "在海边拍摄日出",
-    "location": "青岛海滩",
-    "scheduled_time": "2023-12-25T06:00:00Z"
-}
-response = requests.post("http://localhost:8000/plans/", json=plan_data, headers=headers)
-```
-
-### JavaScript 示例
-
-```javascript
-// 用户登录
-const loginResponse = await fetch('http://localhost:8000/auth/login', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    email: 'test@example.com',
-    password: 'password123'
-  })
-});
-
-const loginData = await loginResponse.json();
-const token = loginData.access_token;
-
-// 获取拍摄计划列表
-const plansResponse = await fetch('http://localhost:8000/plans/', {
-  headers: {
-    'Authorization': `Bearer ${token}`
-  }
-});
-
-const plans = await plansResponse.json();
-console.log(plans);
-```
