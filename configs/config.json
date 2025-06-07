@@ -5,8 +5,5 @@
   },
   "database": {
     "url": "${DATABASE_URL}"
-  },
-  "renderer": {
-    "ws_url": "${RENDERER_WS_URL}"
   }
-} 
+}
