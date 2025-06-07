@@ -1,9 +1,12 @@
 name: dreamcatcher
 channels:
   - conda-forge
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/main
+  - https://mirrors.ustc.edu.cn/anaconda/pkgs/free
+  - https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge
   - defaults
 dependencies:
-  - python
+  - python=3.12
   - pip
   - fastapi
   - uvicorn
@@ -26,8 +29,8 @@ dependencies:
     - pytest-asyncio
     - websocket-client
     - pydantic-settings
-    - pytest
     - pytest-cov
     - python-jose[cryptography]
-    - email-validator
-    - duckduckgo-search
+    - pydantic[email]
+    - SimpleLLMFunc
+    - duckduckgo-search==7.5.5

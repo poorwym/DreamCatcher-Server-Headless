@@ -64,18 +64,21 @@ DREAMCATCHER_SECRET_KEY=key
 
 ## 启动服务
 ### docker部署
+#### 依赖
+本地DATABASE_URL可以使用postgresql://postgres:postgres@host.docker.internal:5432/dreamcatcher
 #### 启动
 ```
-docker-compose up -d
+docker compose -f docker-compose.yml build && docker compose up -d
 ```
 
 
 ### 本地部署
 #### 依赖
 需要本地有postgres@14
+本地DATABASE_URL可以使用postgresql://postgres:postgres@localhost:5432/dreamcatcher
 #### 配置环境
 ```bash
-conda create -n dreamcatcher python=3.13
+conda create -n dreamcatcher python=3.12
 conda activate dreamcatcher
 uv pip install -r requirements.txt
 ```

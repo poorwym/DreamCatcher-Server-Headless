@@ -1,27 +1,39 @@
-FROM python:3.11-slim
+FROM python:3.12-slim-bullseye
 
 WORKDIR /app
 
 COPY ./app /app
-COPY ./configs /app/configs
-COPY ./requirements.txt /app/requirements.txt
+COPY ./configs /configs
 
-# 安装必要的依赖
-RUN apt-get update && apt-get install -y \
+# 替换为中科大APT源并安装依赖
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    sed -i 's|http://deb.debian.org|https://mirrors.ustc.edu.cn|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.debian.org|https://mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list && \
+    apt-get update && apt-get install -y \
     wget \
     bzip2 \
     ca-certificates \
     curl \
     git \
-    ffmpeg \
+    clang            \
+    llvm-dev         \
+    libclang-dev     \
+    build-essential \
+    gcc \
+    cmake \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
 
-# 根据架构选择正确的Miniconda安装包
+ENV LIBCLANG_PATH=/usr/lib/llvm-17/lib
+
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable --profile default && \
+    echo '[source.crates-io]\nreplace-with = "ustc"\n[source.ustc]\nregistry = "https://mirrors.ustc.edu.cn/crates.io-index"' >> ~/.cargo/config
+
+# 根据架构选择正确的Miniconda安装包并使用中科大镜像安装
 RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"; \
+        MINICONDA_URL="https://mirrors.ustc.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh"; \
     elif [ "$(uname -m)" = "aarch64" ]; then \
-        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh"; \
+        MINICONDA_URL="https://mirrors.ustc.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-aarch64.sh"; \
     else \
         echo "Unsupported architecture: $(uname -m)"; \
         exit 1; \
@@ -35,11 +47,20 @@ ENV PATH /opt/conda/bin:$PATH
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-# 安装uv并使用它安装依赖
-RUN pip install uv && \
-    uv pip install --system -r requirements.txt
+# 设置中科大 pip 源
+RUN mkdir -p /root/.pip && echo "[global]\nindex-url = https://pypi.mirrors.ustc.edu.cn/simple" > /root/.pip/pip.conf
 
-# 使用conda运行基础环境
+# 设置中科大 conda 源
+RUN conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main && \
+    conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/free && \
+    conda config --add channels https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge && \
+    conda config --set show_channel_urls yes && \
+    conda env create -f /configs/environment.yml
+
+# 设置默认环境路径
+ENV PATH /opt/conda/envs/dreamcatcher/bin:/opt/conda/bin:$PATH
+
+# 切换到 bash 环境
 SHELL ["/bin/bash", "--login", "-c"]
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
