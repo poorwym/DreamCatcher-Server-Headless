@@ -2,6 +2,7 @@ import os
 import json
 import re
 from typing import ClassVar
+from pathlib import Path
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 
@@ -17,9 +18,9 @@ def singleton(cls):
 class ConfigLoader:
     def __init__(self, config_path=None):
         # 获取项目根目录, 为DreamCatcher-Server-Headless的根目录
-        self.project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        self.project_root = Path(__file__).parent.parent.parent
         # 加载 .env 文件
-        env_path = os.path.join(self.project_root, 'configs', '.env')
+        env_path = self.project_root / 'configs' / '.env'
         load_dotenv(env_path)
         try:
             print(os.getenv("OPENAI_API_KEY"))
@@ -37,9 +38,9 @@ class ConfigLoader:
             print(e)
         
         if config_path is None:
-            config_path = os.path.join(self.project_root, 'configs', 'config.json')
+            config_path = self.project_root / 'configs' / 'config.json'
         else:
-            config_path = os.path.join(self.project_root, config_path)
+            config_path = self.project_root / config_path
         try:
             self.config = self._load_config(config_path)
         except Exception as e:
@@ -77,7 +78,7 @@ class ConfigLoader:
         rel_path = self.get(key, default)
         if rel_path is None:
             return None
-        return os.path.join(self.project_root, rel_path)
+        return self.project_root / rel_path
     
     def get_env(self, key, default=None):
         """专门用于获取环境变量"""

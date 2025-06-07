@@ -1,0 +1,66 @@
+{
+  "info": {
+    "name": "DreamCatcher LLM API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "A collection for testing the DreamCatcher LLM chat API"
+  },
+  "item": [
+    {
+      "name": "LLM Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "\"今天天气怎么样\""
+        },
+        "url": {
+          "raw": "{{base_url}}/llm/chat",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "llm",
+            "chat"
+          ]
+        }
+      }
+    },
+    {
+      "name": "LLM Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/llm/health",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "llm",
+            "health"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "access_token",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4OWYwZjNhMC00YzFlLTRhNDEtYmI4ZS1hNzg2ZGQwODI4YjQiLCJlbWFpbCI6ImFsaWNlQGV4YW1wbGUuY29tIiwiZXhwIjoxNzQ5MTMwOTIxfQ.suytBhx-7Gp1GuH2pU_aoOKG_DtpAh--Jo-O4Ol2-rE"
+    }
+  ]
+}

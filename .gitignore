@@ -35,3 +35,7 @@ test/result/
 .coverage
 repomix-output.xml
 pytest_cache/
+
+provider.json
+logs/
+log_indices/

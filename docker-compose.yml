@@ -14,7 +14,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
 
   db:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:14-3.3
     restart: always
     ports:
       - "5432:5432"
@@ -25,6 +25,26 @@ services:
     volumes:
       - ./pgdata:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  mediamtx:
+      image: bluenviron/mediamtx:latest
+      container_name: mediamtx
+      restart: unless-stopped
+      ports:
+        - "1935:1935"      # RTMP 推流
+        - "8888:8888"      # HLS / HTTP-FLV
+        - "8889:8889"      # WebRTC (WHEP/WHIP)
+        - "8554:8554"      # RTSP
+        - "8189:8189/udp"
+      volumes:
+        - ./mediamtx.yml:/mediamtx.yml  # 配置文件挂载
+
+  ffmpeg_encoder:
+    image: jrottenberg/ffmpeg:4.4-alpine
+    container_name: ffmpeg_encoder
+    volumes:
+      - ./script/start_ffmpeg.sh:/start_ffmpeg.sh
+    entrypoint: [ "/bin/sh", "/start_ffmpeg.sh" ]
 
 volumes:
   pgdata:

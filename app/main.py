@@ -1,15 +1,14 @@
 import sys
-import os
 
 # 将当前目录添加到Python路径
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import settings
-from api import plans, media_ws
-from db import create_tables
+from api import plan_api, auth_api, llm_api, util_api
 
 # 创建FastAPI应用
 app = FastAPI(
@@ -26,13 +25,11 @@ app.add_middleware(
 )
 
 # 添加路由
-app.include_router(plans.router, prefix=f"{settings.API_V1_STR}")
-app.include_router(media_ws.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(plan_api.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(auth_api.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(llm_api.router, prefix=f"{settings.API_V1_STR}")
+app.include_router(util_api.router, prefix=f"{settings.API_V1_STR}")
 
 @app.get("/")
 def read_root():
     return {"message": f"{settings.PROJECT_NAME} API is running!"}
-@app.on_event("startup")
-def startup_event():
-    # 创建数据库表
-    create_tables()

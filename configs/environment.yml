@@ -18,6 +18,7 @@ dependencies:
   - shapely
   - pyproj
   - pillow
+  - bcrypt
   - pip:
     - httpx
     - postgis
@@ -27,3 +28,6 @@ dependencies:
     - pydantic-settings
     - pytest
     - pytest-cov
+    - python-jose[cryptography]
+    - email-validator
+    - duckduckgo-search
