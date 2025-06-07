@@ -38,7 +38,7 @@ def create_plan(db: Session, plan: PlanCreate) -> Plan:
         description=plan.description,
         start_time=plan.start_time,
         camera=plan.camera.model_dump(),
-        tileset_url=plan.tileset_url,
+        tileset_url= plan.tileset_url,
         user_id=plan.user_id
     )
     db.add(db_plan)
@@ -60,8 +60,12 @@ def update_plan(db: Session, plan_id: UUID, plan: PlanUpdate, user_id: UUID) -> 
     
     # 特殊处理camera字段，因为它是嵌套对象
     if "camera" in update_data and update_data["camera"]:
-        update_data["camera"] = update_data["camera"].model_dump()
-    
+        # 如果 camera 是 Pydantic 模型对象，转换为字典
+        if hasattr(update_data["camera"], 'model_dump'):
+            update_data["camera"] = update_data["camera"].model_dump()
+        # 如果已经是字典，保持不变
+        # 如果是 JSON 字符串，SQLAlchemy 会自动处理
+
     for key, value in update_data.items():
         setattr(db_plan, key, value)
     

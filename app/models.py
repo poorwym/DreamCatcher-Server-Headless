@@ -14,7 +14,7 @@ class Plan(Base):
     description = Column(Text, nullable=True)
     start_time = Column(DateTime(timezone=True), nullable=False)
     camera = Column(JSON, nullable=False)  # 存储Camera对象
-    tileset_url = Column(String, nullable=False)
+    tileset_url = Column(String, nullable=True)
     user_id = Column(UUID(as_uuid=True), nullable=False, index=True)  # 添加用户ID字段
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

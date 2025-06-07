@@ -30,3 +30,4 @@ dependencies:
     - pytest-cov
     - python-jose[cryptography]
     - email-validator
+    - duckduckgo-search
