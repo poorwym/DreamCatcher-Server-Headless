@@ -1,3 +1,6 @@
+import sys
+import pathlib
+sys.path.append(str(pathlib.Path(__file__).parent.parent.parent))
 from typing import Optional
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
@@ -13,8 +16,12 @@ from app.schemas.auth_model import (
     PasswordChangeRequest, MessageResponse
 )
 
+from app.core.config import ConfigLoader
+
+config = ConfigLoader()
+
 # JWT配置
-SECRET_KEY = "dreamcatcher-secret-key-change-in-production"  # 生产环境中应该使用环境变量
+SECRET_KEY = config.get_env("DREAMCATCHER_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
