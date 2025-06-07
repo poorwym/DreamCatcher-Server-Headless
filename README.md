@@ -81,6 +81,8 @@ uv pip install -r requirements.txt
 ```
 
 #### 启动
+scripts/run_db.sh中
+alexwu改成自己的用户名
 ```bash
 chmod +x ./script/run.sh
 ./script/run.sh
