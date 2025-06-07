@@ -61,6 +61,7 @@ RUN conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main &
 ENV PATH /opt/conda/envs/dreamcatcher/bin:/opt/conda/bin:$PATH
 
 # 切换到 bash 环境
+
 SHELL ["/bin/bash", "--login", "-c"]
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
