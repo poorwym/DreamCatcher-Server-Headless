@@ -39,3 +39,6 @@ pytest_cache/
 provider.json
 logs/
 log_indices/
+
+certbot/
+html/
