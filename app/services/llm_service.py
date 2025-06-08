@@ -7,6 +7,8 @@ import datetime
 import logging
 from typing import List
 import threading
+import time
+import random
 
 # 配置日志
 logging.basicConfig(level=logging.INFO)
@@ -72,10 +74,26 @@ def search(query: str) -> str:
     try:
         logger.info(f"正在搜索: {query}")
         
+        # 设置完整的Headers，包括User-Agent、语言等
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            'Cache-Control': 'max-age=0'
+        }
+        
         results = []
-        with DDGS() as ddgs:
-            # 获取前5个搜索结果
-            search_results = list(ddgs.text(query, max_results=5))
+        with DDGS(headers=headers) as ddgs:
+            # 获取前5个搜索结果，设置中文区域
+            search_results = list(ddgs.text(query, region='cn-zh', max_results=5))
             
             for i, result in enumerate(search_results, 1):
                 title = result.get('title', '无标题')

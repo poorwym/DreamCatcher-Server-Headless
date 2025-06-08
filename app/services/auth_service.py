@@ -61,10 +61,14 @@ def verify_token(token: str) -> Optional[TokenData]:
 
 def get_user_by_id(db: Session, user_id: UUID) -> Optional[UserModel]:
     """根据用户ID获取用户"""
+    if db is None:
+        raise ValueError("数据库会话不能为空")
     return db.query(UserModel).filter(UserModel.user_id == user_id).first()
 
 def get_user_by_email(db: Session, email: str) -> Optional[UserModel]:
     """根据邮箱获取用户"""
+    if db is None:
+        raise ValueError("数据库会话不能为空")
     return db.query(UserModel).filter(UserModel.email == email).first()
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[UserModel]:

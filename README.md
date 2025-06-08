@@ -67,7 +67,7 @@ DREAMCATCHER_SECRET_KEY=key
 #### 依赖
 本地DATABASE_URL可以使用postgresql://postgres:postgres@host.docker.internal:5432/dreamcatcher
 #### 启动
-```
+```bash
 docker compose -f docker-compose.yml build && docker compose up -d
 ```
 
