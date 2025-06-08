@@ -1,7 +1,7 @@
 import sys
 import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.parent.parent))
-
+from zoneinfo import ZoneInfo
 from app.core.config import ConfigLoader
 import datetime
 import logging
@@ -183,13 +183,14 @@ def get_weather(position : tuple[float, float], date : str) -> dict:
 @tool(name="get_current_time", description="获取当前时间")
 def get_current_time() -> str:
     '''
-    获取当前时间
+    获取中国标准时间（Asia/Shanghai）
     Returns:
-        str: 当前时间, 格式为"YYYY-MM-DD HH:MM:SS"  
+        str: 当前时间, 格式为"YYYY-MM-DD HH:MM:SS"
     '''
     try:
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"获取当前时间: {current_time}")
+        china_tz = ZoneInfo("Asia/Shanghai")
+        current_time = datetime.datetime.now(tz=china_tz).strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"获取当前时间（中国时区）: {current_time}")
         return current_time
     except Exception as e:
         logger.error(f"获取当前时间异常: {str(e)}")
@@ -465,6 +466,7 @@ def llm_service(user_id : str, query : str) -> str:
     '''
     你叫Morpheus,是一个专业的拍照计划管理助手，根据用户的请求提供帮助,
     在必要的时候调用工具函数来获取,删除或更新拍摄计划信息。
+    你需要确保计划的创建和更新都不会设置为过去的时间,可以通过get_current_time工具获取当前时间。
     
     你可以：
     1. 查询和管理用户的拍摄计划
