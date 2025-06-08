@@ -51,11 +51,18 @@ def create_plan(
     """
     创建新的拍摄计划
     
-    计划将自动关联到当前用户
+    计划将自动关联到当前用户，开始时间不能是过去的时间
     """
     # 确保计划关联到当前用户
     plan.user_id = current_user.user_id
-    return plan_service.create_plan(db=db, plan=plan)
+    
+    try:
+        return plan_service.create_plan(db=db, plan=plan)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
 
 @router.patch("/{plan_id}", response_model=Plan, summary="更新拍摄计划")
 def update_plan(
@@ -67,17 +74,23 @@ def update_plan(
     """
     更新指定ID的拍摄计划
     
-    只能更新当前用户创建的计划
+    只能更新当前用户创建的计划，如果更新开始时间，不能设置为过去的时间
     """
-    updated_plan = plan_service.update_plan(
-        db=db, 
-        plan_id=plan_id, 
-        plan=plan, 
-        user_id=current_user.user_id
-    )
-    if updated_plan is None:
-        raise HTTPException(status_code=404, detail="计划未找到或无权访问")
-    return updated_plan
+    try:
+        updated_plan = plan_service.update_plan(
+            db=db, 
+            plan_id=plan_id, 
+            plan=plan, 
+            user_id=current_user.user_id
+        )
+        if updated_plan is None:
+            raise HTTPException(status_code=404, detail="计划未找到或无权访问")
+        return updated_plan
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
 
 @router.delete("/{plan_id}", status_code=status.HTTP_204_NO_CONTENT, summary="删除拍摄计划")
 def delete_plan(

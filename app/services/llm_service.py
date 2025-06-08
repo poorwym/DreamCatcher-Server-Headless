@@ -1,7 +1,7 @@
 import sys
 import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.parent.parent))
-
+from zoneinfo import ZoneInfo
 from app.core.config import ConfigLoader
 import datetime
 import logging
@@ -65,7 +65,7 @@ def close_db_session():
 def search(query: str) -> str:
     '''
     搜索所有你需要的,别的工具无法提供的信息，使用DuckDuckGo搜索引擎
-    
+
     Args:
         query: 搜索关键词
     Returns:
@@ -73,7 +73,6 @@ def search(query: str) -> str:
     '''
     try:
         logger.info(f"正在搜索: {query}")
-        
         # 设置完整的Headers，包括User-Agent、语言等
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -89,19 +88,17 @@ def search(query: str) -> str:
             'Sec-Fetch-User': '?1',
             'Cache-Control': 'max-age=0'
         }
-        
         results = []
         with DDGS(headers=headers) as ddgs:
             # 获取前5个搜索结果，设置中文区域
             search_results = list(ddgs.text(query, region='cn-zh', max_results=5))
-            
             for i, result in enumerate(search_results, 1):
                 title = result.get('title', '无标题')
                 body = result.get('body', '无描述')
                 href = result.get('href', '无链接')
-                
+
                 results.append(f"{i}. 标题: {title}\n   链接: {href}\n   描述: {body}\n")
-        
+
         if results:
             search_summary = f"搜索 '{query}' 的结果:\n\n" + "\n".join(results)
             logger.info(f"搜索完成，找到 {len(results)} 个结果")
@@ -109,7 +106,7 @@ def search(query: str) -> str:
         else:
             logger.warning(f"搜索 '{query}' 未找到任何结果")
             return f"抱歉，没有找到关于 '{query}' 的相关信息。"
-            
+
     except Exception as e:
         logger.error(f"搜索异常: {query}, 错误: {str(e)}")
         return f"搜索时发生错误: {str(e)}"
@@ -183,13 +180,14 @@ def get_weather(position : tuple[float, float], date : str) -> dict:
 @tool(name="get_current_time", description="获取当前时间")
 def get_current_time() -> str:
     '''
-    获取当前时间
+    获取中国标准时间（Asia/Shanghai）
     Returns:
-        str: 当前时间, 格式为"YYYY-MM-DD HH:MM:SS"  
+        str: 当前时间, 格式为"YYYY-MM-DD HH:MM:SS"
     '''
     try:
-        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"获取当前时间: {current_time}")
+        china_tz = ZoneInfo("Asia/Shanghai")
+        current_time = datetime.datetime.now(tz=china_tz).strftime("%Y-%m-%d %H:%M:%S")
+        logger.info(f"获取当前时间（中国时区）: {current_time}")
         return current_time
     except Exception as e:
         logger.error(f"获取当前时间异常: {str(e)}")
@@ -465,6 +463,7 @@ def llm_service(user_id : str, query : str) -> str:
     '''
     你叫Morpheus,是一个专业的拍照计划管理助手，根据用户的请求提供帮助,
     在必要的时候调用工具函数来获取,删除或更新拍摄计划信息。
+    你需要确保计划的创建和更新都不会设置为过去的时间,可以通过get_current_time工具获取当前时间。
     
     你可以：
     1. 查询和管理用户的拍摄计划
