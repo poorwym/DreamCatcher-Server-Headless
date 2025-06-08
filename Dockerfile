@@ -47,14 +47,25 @@ ENV PATH /opt/conda/bin:$PATH
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
+
+# 网络优化配置
+ENV REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+ENV CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+
 # 设置中科大 pip 源
 RUN mkdir -p /root/.pip && echo "[global]\nindex-url = https://pypi.mirrors.ustc.edu.cn/simple" > /root/.pip/pip.conf
 
-# 设置中科大 conda 源
-RUN conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main && \
-    conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/free && \
+# 设置中科大 conda 源，删除默认源并设置conda-forge镜像映射
+RUN rm -f /opt/conda/.condarc && \
+    conda config --remove-key channels || true && \
     conda config --add channels https://mirrors.ustc.edu.cn/anaconda/cloud/conda-forge && \
+    conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/main && \
+    conda config --add channels https://mirrors.ustc.edu.cn/anaconda/pkgs/free && \
     conda config --set show_channel_urls yes && \
+    conda config --set channel_alias https://mirrors.ustc.edu.cn/anaconda && \
+    conda config --set custom_channels.conda-forge https://mirrors.ustc.edu.cn/anaconda/cloud && \
+    conda config --set auto_activate_base false && \
+    conda config --set offline false && \
     conda env create -f /configs/environment.yml
 
 # 设置默认环境路径

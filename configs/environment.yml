@@ -34,3 +34,5 @@ dependencies:
     - pydantic[email]
     - SimpleLLMFunc
     - duckduckgo-search==7.5.5
+    - tenacity
+
