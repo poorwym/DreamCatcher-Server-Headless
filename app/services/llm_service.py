@@ -73,7 +73,6 @@ def search(query: str) -> str:
     '''
     try:
         logger.info(f"正在搜索: {query}")
-
         # 设置完整的Headers，包括User-Agent、语言等
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -89,12 +88,10 @@ def search(query: str) -> str:
             'Sec-Fetch-User': '?1',
             'Cache-Control': 'max-age=0'
         }
-
         results = []
         with DDGS(headers=headers) as ddgs:
             # 获取前5个搜索结果，设置中文区域
             search_results = list(ddgs.text(query, region='cn-zh', max_results=5))
-
             for i, result in enumerate(search_results, 1):
                 title = result.get('title', '无标题')
                 body = result.get('body', '无描述')
